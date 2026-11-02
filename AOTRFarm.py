@@ -276,13 +276,18 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                             'optional': True},
                            {'action': 'wait', 'seconds': 3.0}]},
  'start_mission': {'name': 'start_mission',
-                   'description': 'Menu chính -> PLAY -> chọn ô LOBBY (không phải TRADE) -> chờ tải vào '
-                                  "lobby. Template: 'lobby_play_button' = dòng chữ PLAY trên menu chính "
-                                  "(cũng dùng để nhận biết sảnh); 'lobby_card' = ô LOBBY (chụp cả ô có chữ "
-                                  'LOBBY). Các bước tiếp theo trong lobby (nhận nhiệm vụ...) thêm vào cuối '
-                                  'danh sách.',
+                   'description': 'Menu chính -> PLAY -> ô LOBBY -> chờ tải -> trong lobby bấm ô PLAY lớn. '
+                                  "Template: 'lobby_play_button' = chữ PLAY trên menu chính KÈM một phần chữ "
+                                  'CUSTOMIZATION bên dưới (để không nhầm với ô PLAY trong lobby), anchor_y '
+                                  "0.3 = bấm vào phần chữ PLAY ở trên; 'lobby_card' = ô LOBBY; "
+                                  "'mission_play_button' = ô PLAY lớn trong lobby (khung viền cam, dòng N/A "
+                                  "phía trên). 'missions_card' = thẻ MISSIONS (chụp tiêu đề MISSIONS kèm "
+                                  'phần trên của hình).',
                    'steps': [{'action': 'log', 'message': 'Menu chính: bấm PLAY'},
-                             {'action': 'click_image', 'template': 'lobby_play_button', 'timeout': 15},
+                             {'action': 'click_image',
+                              'template': 'lobby_play_button',
+                              'anchor_y': 0.3,
+                              'timeout': 15},
                              {'action': 'wait', 'seconds': 1.5},
                              {'action': 'log', 'message': 'Chọn LOBBY'},
                              {'action': 'click_image', 'template': 'lobby_card', 'timeout': 15},
@@ -291,7 +296,12 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                               'template': 'lobby_card',
                               'timeout': 60,
                               'optional': True},
-                             {'action': 'wait', 'seconds': 5.0}]}}
+                             {'action': 'log', 'message': 'Trong lobby: bấm PLAY'},
+                             {'action': 'click_image', 'template': 'mission_play_button', 'timeout': 60},
+                             {'action': 'wait', 'seconds': 2.0},
+                             {'action': 'log', 'message': 'Chọn MISSIONS'},
+                             {'action': 'click_image', 'template': 'missions_card', 'timeout': 20},
+                             {'action': 'wait', 'seconds': 1.5}]}}
 
 
 def write_default_macros() -> None:
@@ -2929,7 +2939,7 @@ class FarmApp:
         tpl.pack(fill="x")
         ttk.Label(tpl, text="Tên template:").grid(row=0, column=0, sticky="w")
         names = sorted(set(self.s.cfg.detection.state_templates.values()) |
-                       {"slot_a_card", "join_community_button", "lobby_card", "start_button",
+                       {"slot_a_card", "join_community_button", "lobby_card", "mission_play_button", "missions_card",
                         "retry_button", "continue_button", "reconnect_button", "close_button"})
         self.tpl_name = tk.StringVar(value=names[0])
         ttk.Combobox(tpl, textvariable=self.tpl_name, values=names, width=28).grid(row=0, column=1, padx=6)
