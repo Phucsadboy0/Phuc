@@ -13,6 +13,11 @@ on:
 permissions:
   contents: write   # cần để tạo Release khi đẩy tag
 
+# Push mới hủy lần build cũ còn đang chạy trên cùng nhánh
+concurrency:
+  group: build-exe-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: windows-latest
