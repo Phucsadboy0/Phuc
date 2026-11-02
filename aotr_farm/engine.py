@@ -43,6 +43,7 @@ log = logging.getLogger(__name__)
 class State(str, enum.Enum):
     IDLE = "Chờ lệnh"
     STARTING = "Khởi động"
+    SELECT_SLOT = "Chọn slot"
     LOBBY = "Ở sảnh"
     IN_MISSION = "Đang làm nhiệm vụ"
     REWARD = "Nhận thưởng"
@@ -307,6 +308,8 @@ class FarmEngine:
                 return
             if state == "disconnected":
                 raise FarmError("Mất kết nối giữa nhiệm vụ")
+            if state == "slot_select":
+                raise FarmError("Bị đưa về màn hình chọn slot giữa nhiệm vụ")
             if state is not None:
                 self._last_known_state_at = now
             elif now - self._last_known_state_at > self.cfg.timing.stuck_timeout:
@@ -316,16 +319,23 @@ class FarmEngine:
                 raise FarmError(f"Nhiệm vụ quá {self.cfg.timing.mission_timeout:.0f}s")
 
     def _enter_mission(self) -> None:
-        """Ở sảnh: chờ nút Play rồi chạy macro vào nhiệm vụ."""
+        """(Chọn slot nếu cần) -> ở sảnh chờ nút Play -> chạy macro vào nhiệm vụ."""
         self._set_state(State.LOBBY)
+        state = self._detect_state()
+        if state == "slot_select":
+            self._select_slot()
+            state = self._detect_state()
         if self._state_template("lobby"):
             deadline = time.monotonic() + self.cfg.timing.lobby_wait_timeout
-            while (state := self._detect_state()) != "lobby":
+            while state != "lobby":
                 if state == "in_mission":
                     return
+                if state == "slot_select":
+                    self._select_slot()
                 if time.monotonic() > deadline:
                     raise FarmError("Không thấy màn hình sảnh")
                 self.sleep(self.cfg.timing.detection_interval)
+                state = self._detect_state()
         if self.macros.exists(self.cfg.macro_start):
             self.run_macro(self.cfg.macro_start)
         # Chờ vào trận (nếu có template HUD nhiệm vụ)
@@ -335,6 +345,15 @@ class FarmEngine:
                 if time.monotonic() > deadline:
                     raise FarmError("Không vào được nhiệm vụ (hết thời gian chờ tải)")
                 self.sleep(self.cfg.timing.detection_interval)
+
+    def _select_slot(self) -> None:
+        """Màn hình chọn nhân vật: bấm SELECT ở Slot A (macro ``select_slot``)."""
+        self._set_state(State.SELECT_SLOT)
+        if not self.macros.exists(self.cfg.macro_select_slot):
+            raise FarmError(f"Đang ở màn hình chọn slot nhưng thiếu macro '{self.cfg.macro_select_slot}'")
+        log.info("Chọn slot nhân vật")
+        self.run_macro(self.cfg.macro_select_slot)
+        self._set_state(State.LOBBY)
 
     def _handle_reward(self) -> None:
         self._set_state(State.REWARD)

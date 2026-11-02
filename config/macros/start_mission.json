@@ -1,11 +1,14 @@
 {
   "name": "start_mission",
-  "description": "Ở sảnh: bấm nút chơi/bắt đầu nhiệm vụ. Hãy chụp template các nút này trong tab Công cụ.",
+  "description": "Menu chính -> PLAY -> chọn ô LOBBY (không phải TRADE) -> chờ tải vào lobby. Template: 'lobby_play_button' = dòng chữ PLAY trên menu chính (cũng dùng để nhận biết sảnh); 'lobby_card' = ô LOBBY (chụp cả ô có chữ LOBBY). Các bước tiếp theo trong lobby (nhận nhiệm vụ...) thêm vào cuối danh sách.",
   "steps": [
-    {"action": "log", "message": "Vào nhiệm vụ..."},
-    {"action": "click_image", "template": "play_button", "timeout": 15, "optional": true},
+    {"action": "log", "message": "Menu chính: bấm PLAY"},
+    {"action": "click_image", "template": "lobby_play_button", "timeout": 15},
     {"action": "wait", "seconds": 1.5},
-    {"action": "click_image", "template": "start_button", "timeout": 15, "optional": true},
-    {"action": "wait", "seconds": 3.0}
+    {"action": "log", "message": "Chọn LOBBY"},
+    {"action": "click_image", "template": "lobby_card", "timeout": 15},
+    {"action": "wait", "seconds": 2.0},
+    {"action": "wait_image_gone", "template": "lobby_card", "timeout": 60, "optional": true},
+    {"action": "wait", "seconds": 5.0}
   ]
 }

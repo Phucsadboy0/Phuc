@@ -1,0 +1,18 @@
+{
+  "name": "select_slot",
+  "description": "Màn hình chọn nhân vật khi mới vào game: bấm SELECT ở Slot A, rồi bấm 'Join Community' nếu popup 'Join AoTR' hiện ra. Template 'slot_a_card' là ảnh chụp CẢ thẻ Slot A (từ chữ SLOT A tới nút SELECT); anchor_y 0.92 = vị trí nút SELECT gần đáy thẻ. Template 'join_community_button' là ảnh chụp nút xanh 'Join Community'.",
+  "steps": [
+    {"action": "log", "message": "Chọn Slot A..."},
+    {"action": "click_image", "template": "slot_a_card", "anchor_x": 0.5, "anchor_y": 0.92, "timeout": 10},
+    {"action": "wait", "seconds": 1.5},
+    {"action": "if_image", "template": "join_community_button",
+     "then": [
+       {"action": "log", "message": "Bấm Join Community"},
+       {"action": "click_image", "template": "join_community_button", "timeout": 5},
+       {"action": "wait", "seconds": 1.5}
+     ]},
+    {"action": "click_image", "template": "join_community_button", "timeout": 4, "optional": true},
+    {"action": "wait_image_gone", "template": "slot_a_card", "timeout": 30, "optional": true},
+    {"action": "wait", "seconds": 3.0}
+  ]
+}

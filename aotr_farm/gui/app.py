@@ -34,7 +34,8 @@ from .region_picker import crop_relative, pick_region
 log = logging.getLogger(__name__)
 
 STATE_COLORS = {
-    State.IDLE: "#7f8c8d", State.STARTING: "#2980b9", State.LOBBY: "#2980b9",
+    State.IDLE: "#7f8c8d", State.STARTING: "#2980b9", State.SELECT_SLOT: "#2980b9",
+    State.LOBBY: "#2980b9",
     State.IN_MISSION: "#27ae60", State.REWARD: "#8e44ad", State.RECOVERING: "#e67e22",
     State.BREAK: "#16a085", State.PAUSED: "#f39c12", State.STOPPING: "#7f8c8d",
     State.STOPPED: "#7f8c8d", State.ERROR: "#c0392b",
@@ -49,6 +50,7 @@ LABELS: Dict[str, str] = {
     "macro_mission": "Macro trong nhiệm vụ",
     "macro_reward": "Macro màn hình thưởng",
     "macro_recover": "Macro khôi phục",
+    "macro_select_slot": "Macro chọn slot (Slot A)",
     "max_consecutive_errors": "Số lỗi liên tiếp tối đa",
     "hotkey_toggle": "Phím Start/Stop",
     "hotkey_pause": "Phím Pause/Resume",
@@ -413,8 +415,8 @@ class FarmApp:
         tpl.pack(fill="x")
         ttk.Label(tpl, text="Tên template:").grid(row=0, column=0, sticky="w")
         names = sorted(set(self.s.cfg.detection.state_templates.values()) |
-                       {"play_button", "start_button", "retry_button", "continue_button",
-                        "reconnect_button", "close_button"})
+                       {"slot_a_card", "join_community_button", "lobby_card", "start_button",
+                        "retry_button", "continue_button", "reconnect_button", "close_button"})
         self.tpl_name = tk.StringVar(value=names[0])
         ttk.Combobox(tpl, textvariable=self.tpl_name, values=names, width=28).grid(row=0, column=1, padx=6)
         ttk.Button(tpl, text="Chụp & khoanh vùng", command=self._capture_template).grid(row=0, column=2)

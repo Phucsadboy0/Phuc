@@ -150,12 +150,18 @@ Sau khi sửa code trong `aotr_farm/`, tạo lại file bằng `python tools/bui
 1. **Mở Roblox → AOTR**, đặt chế độ **cửa sổ** (không fullscreen), kích thước cố định
    (ví dụ 1280×720). Đừng đổi kích thước sau khi đã chụp template.
 2. Tab **Công cụ → "Tìm cửa sổ Roblox"** để kiểm tra tool đã thấy game.
-3. **Chụp template** (chọn tên → *"Chụp & khoanh vùng"* → kéo chuột quanh vùng đặc trưng → Enter):
-   * Ở sảnh: `lobby_play_button`, `play_button`, `start_button`
-   * Trong trận: `mission_hud` (một phần HUD luôn hiện, ví dụ biểu tượng gas)
-   * Màn hình thưởng: `reward_screen` (tiêu đề), `retry_button` hoặc `continue_button`
-   * (Nếu gặp) hộp thoại mất kết nối: `disconnected_dialog`, `reconnect_button`
+3. **Chụp template** (chọn tên → *"Chụp & khoanh vùng"* → kéo chuột quanh vùng → Enter), theo đúng thứ tự vào game:
+   * Màn hình chọn nhân vật: `slot_a_card` = **cả thẻ Slot A** (từ chữ "SLOT A" xuống hết nút SELECT).
+   * Popup "Join AoTR": `join_community_button` = nút xanh **Join Community**.
+   * Menu chính: `lobby_play_button` = dòng chữ **PLAY**.
+   * Sau khi bấm PLAY: `lobby_card` = **ô LOBBY** (không phải ô TRADE).
+   * Trong trận: `mission_hud` (một phần HUD luôn hiện, ví dụ biểu tượng gas).
+   * Màn hình thưởng: `reward_screen` (tiêu đề), `retry_button` hoặc `continue_button`.
+   * (Nếu gặp) hộp thoại mất kết nối: `disconnected_dialog`, `reconnect_button`.
    * Vật phẩm: đặt tên `items/<tên vật phẩm>` để tool đếm số vật phẩm rơi.
+
+   Luồng tự động: **chọn Slot A → Join Community (nếu popup hiện) → PLAY → LOBBY → vào nhiệm vụ**.
+   Bước chọn slot do macro `select_slot.json` làm; PLAY và LOBBY do `start_mission.json` làm.
 4. **Chọn vùng OCR** (nếu dùng): ở màn hình thưởng, chọn `exp` → *"Khoanh vùng OCR"* quanh con số;
    làm tương tự cho `gold`. Bấm *"Thử đọc OCR"* để kiểm tra.
 5. **"Thử nhận diện trạng thái"**: điểm khớp nên ≥ ngưỡng (mặc định 0.82) ở đúng màn hình.

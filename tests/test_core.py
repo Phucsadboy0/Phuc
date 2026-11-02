@@ -202,3 +202,31 @@ def test_template_matching_with_scaling(tmp_path):
     for x, y in [(100, 50), (300, 200), (500, 120)]:
         frame2[y:y + 30, x:x + 60] = button
     assert m2.count(m2.prepare(frame2), str(tmp_path / "items" / "gem.png"), 1280) == 3
+
+
+def test_click_image_anchor():
+    class Hit:
+        x, y, w, h = 200, 300, 100, 200
+
+    class AnchorCtx(Ctx):
+        def find_template(self, name, threshold=None):
+            return Hit()
+
+    ctx = AnchorCtx()
+    MacroRunner(ctx, jitter=0).run(Macro("m", [
+        {"action": "click_image", "template": "card", "anchor_x": 0.5, "anchor_y": 0.92},
+        {"action": "click_image", "template": "card"},
+    ]))
+    clicks = [e for e in ctx.input.events if e[0] == "click"]
+    assert clicks[0][1:3] == (200, 384)   # 300 + (0.92-0.5)*200
+    assert clicks[1][1:3] == (200, 300)   # mặc định: tâm ảnh
+    with pytest.raises(MacroError):
+        Macro("bad", [{"action": "click_image", "template": "t", "anchor_y": 1.5}])
+
+
+def test_old_config_gets_new_state_templates(tmp_path):
+    path = tmp_path / "settings.json"
+    path.write_text(json.dumps({"detection": {"state_templates": {"lobby": "my_lobby"}}}))
+    cfg = load_config(path)
+    assert cfg.detection.state_templates["lobby"] == "my_lobby"
+    assert cfg.detection.state_templates["slot_select"] == "slot_a_card"

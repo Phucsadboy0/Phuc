@@ -66,7 +66,7 @@ STEP_SCHEMA: Dict[str, Dict[str, type]] = {
     "mouse_up": {},
     "mouse_move_rel": {"dx": int, "dy": int},  # tùy chọn: steps, duration
     "scroll": {"amount": int},
-    "click_image": {"template": str},    # tùy chọn: timeout, threshold, optional, offset_x/y
+    "click_image": {"template": str},    # tùy chọn: timeout, threshold, optional, offset_x/y, anchor_x/y
     "wait_image": {"template": str},     # tùy chọn: timeout, threshold, optional
     "wait_image_gone": {"template": str},
     "if_image": {"template": str},       # then: [...], else: [...]
@@ -92,7 +92,7 @@ def validate_steps(steps: List[Dict[str, Any]], where: str = "steps") -> None:
                 raise MacroError(f"{loc} ({action}): thiếu tham số '{key}'")
             if not isinstance(step[key], typ):
                 raise MacroError(f"{loc} ({action}): '{key}' sai kiểu")
-        for key in ("x", "y"):
+        for key in ("x", "y", "anchor_x", "anchor_y"):
             if key in step and not 0.0 <= float(step[key]) <= 1.0:
                 raise MacroError(f"{loc}: '{key}' phải nằm trong 0..1 (tọa độ tương đối)")
         if action == "repeat":
@@ -262,8 +262,13 @@ class MacroRunner:
         match = self._wait_for(s, True)
         if match is None:
             return
-        x = match.x + int(s.get("offset_x", 0))
-        y = match.y + int(s.get("offset_y", 0))
+        # anchor_x/anchor_y (0..1): click vào vị trí tương đối BÊN TRONG ảnh mẫu,
+        # ví dụ anchor_y=0.92 = gần đáy ảnh (nút SELECT dưới thẻ Slot A).
+        # Mặc định (0.5, 0.5) = tâm ảnh.
+        x = match.x + int((float(s.get("anchor_x", 0.5)) - 0.5) * match.w)
+        y = match.y + int((float(s.get("anchor_y", 0.5)) - 0.5) * match.h)
+        x += int(s.get("offset_x", 0))
+        y += int(s.get("offset_y", 0))
         self.ctx.input.click(x, y, s.get("button", "left"))
 
     def _do_if_image(self, s):

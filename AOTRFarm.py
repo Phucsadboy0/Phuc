@@ -87,6 +87,7 @@ class DetectionConfig:
     grayscale: bool = True               # So khớp ảnh xám -> nhanh hơn, ít RAM hơn
     # Tên các template (file PNG trong templates/) dùng để nhận diện trạng thái
     state_templates: Dict[str, str] = field(default_factory=lambda: {
+        "slot_select": "slot_a_card",     # màn hình chọn slot nhân vật khi mới vào game
         "lobby": "lobby_play_button",
         "in_mission": "mission_hud",
         "reward": "reward_screen",
@@ -131,6 +132,7 @@ class AppConfig:
     macro_mission: str = "mission_loop"  # Macro lặp trong lúc làm nhiệm vụ
     macro_reward: str = "after_reward"   # Macro ở màn hình thưởng (Retry/Continue)
     macro_recover: str = "recover"       # Macro khôi phục khi bị kẹt
+    macro_select_slot: str = "select_slot"  # Macro chọn slot nhân vật (Slot A)
     max_consecutive_errors: int = 3      # Lỗi liên tiếp quá số này -> dừng hẳn
     hotkey_toggle: str = "F6"            # Start / Stop
     hotkey_pause: str = "F7"             # Pause / Resume
@@ -166,6 +168,9 @@ def _build(klass, data: Dict[str, Any]):
         default_value = getattr(defaults, f.name)
         if hasattr(default_value, "__dataclass_fields__"):
             kwargs[f.name] = _build(type(default_value), value)
+        elif isinstance(default_value, dict) and isinstance(value, dict):
+            # Gộp với mặc định -> file cấu hình cũ vẫn nhận được khóa mới
+            kwargs[f.name] = {**default_value, **value}
         elif isinstance(default_value, bool):
             kwargs[f.name] = bool(value)
         elif isinstance(default_value, (int, float)) and not isinstance(value, (int, float)):
@@ -241,20 +246,52 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                         'timeout': 3,
                         'optional': True},
                        {'action': 'wait', 'seconds': 2.0}]},
+ 'select_slot': {'name': 'select_slot',
+                 'description': "Màn hình chọn nhân vật khi mới vào game: bấm SELECT ở Slot A, rồi bấm 'Join "
+                                "Community' nếu popup 'Join AoTR' hiện ra. Template 'slot_a_card' là ảnh "
+                                'chụp CẢ thẻ Slot A (từ chữ SLOT A tới nút SELECT); anchor_y 0.92 = vị trí '
+                                "nút SELECT gần đáy thẻ. Template 'join_community_button' là ảnh chụp nút "
+                                "xanh 'Join Community'.",
+                 'steps': [{'action': 'log', 'message': 'Chọn Slot A...'},
+                           {'action': 'click_image',
+                            'template': 'slot_a_card',
+                            'anchor_x': 0.5,
+                            'anchor_y': 0.92,
+                            'timeout': 10},
+                           {'action': 'wait', 'seconds': 1.5},
+                           {'action': 'if_image',
+                            'template': 'join_community_button',
+                            'then': [{'action': 'log', 'message': 'Bấm Join Community'},
+                                     {'action': 'click_image',
+                                      'template': 'join_community_button',
+                                      'timeout': 5},
+                                     {'action': 'wait', 'seconds': 1.5}]},
+                           {'action': 'click_image',
+                            'template': 'join_community_button',
+                            'timeout': 4,
+                            'optional': True},
+                           {'action': 'wait_image_gone',
+                            'template': 'slot_a_card',
+                            'timeout': 30,
+                            'optional': True},
+                           {'action': 'wait', 'seconds': 3.0}]},
  'start_mission': {'name': 'start_mission',
-                   'description': 'Ở sảnh: bấm nút chơi/bắt đầu nhiệm vụ. Hãy chụp template các nút này '
-                                  'trong tab Công cụ.',
-                   'steps': [{'action': 'log', 'message': 'Vào nhiệm vụ...'},
-                             {'action': 'click_image',
-                              'template': 'play_button',
-                              'timeout': 15,
-                              'optional': True},
+                   'description': 'Menu chính -> PLAY -> chọn ô LOBBY (không phải TRADE) -> chờ tải vào '
+                                  "lobby. Template: 'lobby_play_button' = dòng chữ PLAY trên menu chính "
+                                  "(cũng dùng để nhận biết sảnh); 'lobby_card' = ô LOBBY (chụp cả ô có chữ "
+                                  'LOBBY). Các bước tiếp theo trong lobby (nhận nhiệm vụ...) thêm vào cuối '
+                                  'danh sách.',
+                   'steps': [{'action': 'log', 'message': 'Menu chính: bấm PLAY'},
+                             {'action': 'click_image', 'template': 'lobby_play_button', 'timeout': 15},
                              {'action': 'wait', 'seconds': 1.5},
-                             {'action': 'click_image',
-                              'template': 'start_button',
-                              'timeout': 15,
+                             {'action': 'log', 'message': 'Chọn LOBBY'},
+                             {'action': 'click_image', 'template': 'lobby_card', 'timeout': 15},
+                             {'action': 'wait', 'seconds': 2.0},
+                             {'action': 'wait_image_gone',
+                              'template': 'lobby_card',
+                              'timeout': 60,
                               'optional': True},
-                             {'action': 'wait', 'seconds': 3.0}]}}
+                             {'action': 'wait', 'seconds': 5.0}]}}
 
 
 def write_default_macros() -> None:
@@ -1427,7 +1464,7 @@ STEP_SCHEMA: Dict[str, Dict[str, type]] = {
     "mouse_up": {},
     "mouse_move_rel": {"dx": int, "dy": int},  # tùy chọn: steps, duration
     "scroll": {"amount": int},
-    "click_image": {"template": str},    # tùy chọn: timeout, threshold, optional, offset_x/y
+    "click_image": {"template": str},    # tùy chọn: timeout, threshold, optional, offset_x/y, anchor_x/y
     "wait_image": {"template": str},     # tùy chọn: timeout, threshold, optional
     "wait_image_gone": {"template": str},
     "if_image": {"template": str},       # then: [...], else: [...]
@@ -1453,7 +1490,7 @@ def validate_steps(steps: List[Dict[str, Any]], where: str = "steps") -> None:
                 raise MacroError(f"{loc} ({action}): thiếu tham số '{key}'")
             if not isinstance(step[key], typ):
                 raise MacroError(f"{loc} ({action}): '{key}' sai kiểu")
-        for key in ("x", "y"):
+        for key in ("x", "y", "anchor_x", "anchor_y"):
             if key in step and not 0.0 <= float(step[key]) <= 1.0:
                 raise MacroError(f"{loc}: '{key}' phải nằm trong 0..1 (tọa độ tương đối)")
         if action == "repeat":
@@ -1623,8 +1660,13 @@ class MacroRunner:
         match = self._wait_for(s, True)
         if match is None:
             return
-        x = match.x + int(s.get("offset_x", 0))
-        y = match.y + int(s.get("offset_y", 0))
+        # anchor_x/anchor_y (0..1): click vào vị trí tương đối BÊN TRONG ảnh mẫu,
+        # ví dụ anchor_y=0.92 = gần đáy ảnh (nút SELECT dưới thẻ Slot A).
+        # Mặc định (0.5, 0.5) = tâm ảnh.
+        x = match.x + int((float(s.get("anchor_x", 0.5)) - 0.5) * match.w)
+        y = match.y + int((float(s.get("anchor_y", 0.5)) - 0.5) * match.h)
+        x += int(s.get("offset_x", 0))
+        y += int(s.get("offset_y", 0))
         self.ctx.input.click(x, y, s.get("button", "left"))
 
     def _do_if_image(self, s):
@@ -1841,6 +1883,7 @@ log = logging.getLogger(__name__)
 class State(str, enum.Enum):
     IDLE = "Chờ lệnh"
     STARTING = "Khởi động"
+    SELECT_SLOT = "Chọn slot"
     LOBBY = "Ở sảnh"
     IN_MISSION = "Đang làm nhiệm vụ"
     REWARD = "Nhận thưởng"
@@ -2105,6 +2148,8 @@ class FarmEngine:
                 return
             if state == "disconnected":
                 raise FarmError("Mất kết nối giữa nhiệm vụ")
+            if state == "slot_select":
+                raise FarmError("Bị đưa về màn hình chọn slot giữa nhiệm vụ")
             if state is not None:
                 self._last_known_state_at = now
             elif now - self._last_known_state_at > self.cfg.timing.stuck_timeout:
@@ -2114,16 +2159,23 @@ class FarmEngine:
                 raise FarmError(f"Nhiệm vụ quá {self.cfg.timing.mission_timeout:.0f}s")
 
     def _enter_mission(self) -> None:
-        """Ở sảnh: chờ nút Play rồi chạy macro vào nhiệm vụ."""
+        """(Chọn slot nếu cần) -> ở sảnh chờ nút Play -> chạy macro vào nhiệm vụ."""
         self._set_state(State.LOBBY)
+        state = self._detect_state()
+        if state == "slot_select":
+            self._select_slot()
+            state = self._detect_state()
         if self._state_template("lobby"):
             deadline = time.monotonic() + self.cfg.timing.lobby_wait_timeout
-            while (state := self._detect_state()) != "lobby":
+            while state != "lobby":
                 if state == "in_mission":
                     return
+                if state == "slot_select":
+                    self._select_slot()
                 if time.monotonic() > deadline:
                     raise FarmError("Không thấy màn hình sảnh")
                 self.sleep(self.cfg.timing.detection_interval)
+                state = self._detect_state()
         if self.macros.exists(self.cfg.macro_start):
             self.run_macro(self.cfg.macro_start)
         # Chờ vào trận (nếu có template HUD nhiệm vụ)
@@ -2133,6 +2185,15 @@ class FarmEngine:
                 if time.monotonic() > deadline:
                     raise FarmError("Không vào được nhiệm vụ (hết thời gian chờ tải)")
                 self.sleep(self.cfg.timing.detection_interval)
+
+    def _select_slot(self) -> None:
+        """Màn hình chọn nhân vật: bấm SELECT ở Slot A (macro ``select_slot``)."""
+        self._set_state(State.SELECT_SLOT)
+        if not self.macros.exists(self.cfg.macro_select_slot):
+            raise FarmError(f"Đang ở màn hình chọn slot nhưng thiếu macro '{self.cfg.macro_select_slot}'")
+        log.info("Chọn slot nhân vật")
+        self.run_macro(self.cfg.macro_select_slot)
+        self._set_state(State.LOBBY)
 
     def _handle_reward(self) -> None:
         self._set_state(State.REWARD)
@@ -2487,7 +2548,8 @@ from typing import Any, Dict, List, Tuple
 log = logging.getLogger(__name__)
 
 STATE_COLORS = {
-    State.IDLE: "#7f8c8d", State.STARTING: "#2980b9", State.LOBBY: "#2980b9",
+    State.IDLE: "#7f8c8d", State.STARTING: "#2980b9", State.SELECT_SLOT: "#2980b9",
+    State.LOBBY: "#2980b9",
     State.IN_MISSION: "#27ae60", State.REWARD: "#8e44ad", State.RECOVERING: "#e67e22",
     State.BREAK: "#16a085", State.PAUSED: "#f39c12", State.STOPPING: "#7f8c8d",
     State.STOPPED: "#7f8c8d", State.ERROR: "#c0392b",
@@ -2502,6 +2564,7 @@ LABELS: Dict[str, str] = {
     "macro_mission": "Macro trong nhiệm vụ",
     "macro_reward": "Macro màn hình thưởng",
     "macro_recover": "Macro khôi phục",
+    "macro_select_slot": "Macro chọn slot (Slot A)",
     "max_consecutive_errors": "Số lỗi liên tiếp tối đa",
     "hotkey_toggle": "Phím Start/Stop",
     "hotkey_pause": "Phím Pause/Resume",
@@ -2866,8 +2929,8 @@ class FarmApp:
         tpl.pack(fill="x")
         ttk.Label(tpl, text="Tên template:").grid(row=0, column=0, sticky="w")
         names = sorted(set(self.s.cfg.detection.state_templates.values()) |
-                       {"play_button", "start_button", "retry_button", "continue_button",
-                        "reconnect_button", "close_button"})
+                       {"slot_a_card", "join_community_button", "lobby_card", "start_button",
+                        "retry_button", "continue_button", "reconnect_button", "close_button"})
         self.tpl_name = tk.StringVar(value=names[0])
         ttk.Combobox(tpl, textvariable=self.tpl_name, values=names, width=28).grid(row=0, column=1, padx=6)
         ttk.Button(tpl, text="Chụp & khoanh vùng", command=self._capture_template).grid(row=0, column=2)

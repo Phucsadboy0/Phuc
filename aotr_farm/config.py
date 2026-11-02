@@ -57,6 +57,7 @@ class DetectionConfig:
     grayscale: bool = True               # So khớp ảnh xám -> nhanh hơn, ít RAM hơn
     # Tên các template (file PNG trong templates/) dùng để nhận diện trạng thái
     state_templates: Dict[str, str] = field(default_factory=lambda: {
+        "slot_select": "slot_a_card",     # màn hình chọn slot nhân vật khi mới vào game
         "lobby": "lobby_play_button",
         "in_mission": "mission_hud",
         "reward": "reward_screen",
@@ -101,6 +102,7 @@ class AppConfig:
     macro_mission: str = "mission_loop"  # Macro lặp trong lúc làm nhiệm vụ
     macro_reward: str = "after_reward"   # Macro ở màn hình thưởng (Retry/Continue)
     macro_recover: str = "recover"       # Macro khôi phục khi bị kẹt
+    macro_select_slot: str = "select_slot"  # Macro chọn slot nhân vật (Slot A)
     max_consecutive_errors: int = 3      # Lỗi liên tiếp quá số này -> dừng hẳn
     hotkey_toggle: str = "F6"            # Start / Stop
     hotkey_pause: str = "F7"             # Pause / Resume
@@ -136,6 +138,9 @@ def _build(klass, data: Dict[str, Any]):
         default_value = getattr(defaults, f.name)
         if hasattr(default_value, "__dataclass_fields__"):
             kwargs[f.name] = _build(type(default_value), value)
+        elif isinstance(default_value, dict) and isinstance(value, dict):
+            # Gộp với mặc định -> file cấu hình cũ vẫn nhận được khóa mới
+            kwargs[f.name] = {**default_value, **value}
         elif isinstance(default_value, bool):
             kwargs[f.name] = bool(value)
         elif isinstance(default_value, (int, float)) and not isinstance(value, (int, float)):
