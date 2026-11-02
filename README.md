@@ -158,13 +158,14 @@ Sau khi sửa code trong `aotr_farm/`, tạo lại file bằng `python tools/bui
    * Sau khi bấm PLAY: `lobby_card` = **ô LOBBY** (không phải ô TRADE).
    * Trong lobby: `mission_play_button` = **ô PLAY lớn** (khung viền cam, dòng N/A phía trên).
    * Chọn chế độ: `missions_card` = **thẻ MISSIONS** (tiêu đề kèm phần trên của hình).
+   * Tạo phòng: `create_button` = nút **CREATE** (vàng).
    * Trong trận: `mission_hud` (một phần HUD luôn hiện, ví dụ biểu tượng gas).
    * Màn hình thưởng: `reward_screen` (tiêu đề), `retry_button` hoặc `continue_button`.
    * (Nếu gặp) hộp thoại mất kết nối: `disconnected_dialog`, `reconnect_button`.
    * Vật phẩm: đặt tên `items/<tên vật phẩm>` để tool đếm số vật phẩm rơi.
 
-   Luồng tự động: **chọn Slot A → Join Community (nếu popup hiện) → PLAY → LOBBY → PLAY trong lobby → MISSIONS → vào nhiệm vụ**.
-   Bước chọn slot do macro `select_slot.json` làm; Các bước từ PLAY tới MISSIONS do `start_mission.json` làm.
+   Luồng tự động: **chọn Slot A → Join Community (nếu popup hiện) → PLAY → LOBBY → PLAY trong lobby → MISSIONS → CREATE → vào nhiệm vụ**.
+   Bước chọn slot do macro `select_slot.json` làm; Các bước từ PLAY tới CREATE do `start_mission.json` làm.
 4. **Chọn vùng OCR** (nếu dùng): ở màn hình thưởng, chọn `exp` → *"Khoanh vùng OCR"* quanh con số;
    làm tương tự cho `gold`. Bấm *"Thử đọc OCR"* để kiểm tra.
 5. **"Thử nhận diện trạng thái"**: điểm khớp nên ≥ ngưỡng (mặc định 0.82) ở đúng màn hình.

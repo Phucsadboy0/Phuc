@@ -415,7 +415,7 @@ class FarmApp:
         tpl.pack(fill="x")
         ttk.Label(tpl, text="Tên template:").grid(row=0, column=0, sticky="w")
         names = sorted(set(self.s.cfg.detection.state_templates.values()) |
-                       {"slot_a_card", "join_community_button", "lobby_card", "mission_play_button", "missions_card",
+                       {"slot_a_card", "join_community_button", "lobby_card", "mission_play_button", "missions_card", "create_button",
                         "retry_button", "continue_button", "reconnect_button", "close_button"})
         self.tpl_name = tk.StringVar(value=names[0])
         ttk.Combobox(tpl, textvariable=self.tpl_name, values=names, width=28).grid(row=0, column=1, padx=6)

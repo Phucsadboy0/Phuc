@@ -10,6 +10,7 @@
 | `lobby_card.png`           | Sau khi bấm PLAY: chụp **ô LOBBY** (cả ô có chữ LOBBY, đừng lẫn ô TRADE) |
 | `mission_play_button.png`  | Trong lobby: ô **PLAY** lớn (khung viền cam, dòng N/A phía trên) |
 | `missions_card.png`        | Thẻ **MISSIONS** (chụp tiêu đề MISSIONS kèm phần trên của hình) |
+| `create_button.png`        | Nút **CREATE** (vàng) để tạo phòng nhiệm vụ |
 | `mission_hud.png`          | Nhận biết đang trong nhiệm vụ (thanh máu/gas...)|
 | `reward_screen.png`        | Nhận biết màn hình thưởng (kết thúc lượt)       |
 | `disconnected_dialog.png`  | Nhận biết hộp thoại mất kết nối                 |
