@@ -1,0 +1,11 @@
+{
+  "name": "start_mission",
+  "description": "Ở sảnh: bấm nút chơi/bắt đầu nhiệm vụ. Hãy chụp template các nút này trong tab Công cụ.",
+  "steps": [
+    {"action": "log", "message": "Vào nhiệm vụ..."},
+    {"action": "click_image", "template": "play_button", "timeout": 15, "optional": true},
+    {"action": "wait", "seconds": 1.5},
+    {"action": "click_image", "template": "start_button", "timeout": 15, "optional": true},
+    {"action": "wait", "seconds": 3.0}
+  ]
+}

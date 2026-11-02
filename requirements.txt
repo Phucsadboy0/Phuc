@@ -1,0 +1,10 @@
+# Bắt buộc
+numpy>=1.24
+opencv-python>=4.8
+mss>=9.0
+Pillow>=10.0
+psutil>=5.9
+
+# Tùy chọn
+pytesseract>=0.3.10   # đọc EXP/vàng bằng OCR (cần cài thêm Tesseract-OCR)
+plyer>=2.1            # thông báo góc màn hình Windows

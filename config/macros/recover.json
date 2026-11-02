@@ -1,0 +1,12 @@
+{
+  "name": "recover",
+  "description": "Chạy khi có lỗi/kẹt: nhả phím, đóng hộp thoại, thử kết nối lại.",
+  "steps": [
+    {"action": "release_all"},
+    {"action": "wait", "seconds": 1.0},
+    {"action": "click_image", "template": "reconnect_button", "timeout": 3, "optional": true},
+    {"action": "click_image", "template": "close_button", "timeout": 3, "optional": true},
+    {"action": "click_image", "template": "continue_button", "timeout": 3, "optional": true},
+    {"action": "wait", "seconds": 2.0}
+  ]
+}
