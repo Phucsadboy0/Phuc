@@ -304,11 +304,11 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                              {'action': 'log', 'message': 'Chọn MISSIONS'},
                              {'action': 'click_image', 'template': 'missions_card', 'timeout': 20},
                              {'action': 'wait', 'seconds': 1.5},
-                             {'action': 'log', 'message': 'Bấm CREATE'},
-                             {'action': 'click_image', 'template': 'create_button', 'timeout': 20},
-                             {'action': 'wait', 'seconds': 1.5},
                              {'action': 'log', 'message': 'Chọn map FOREST'},
                              {'action': 'click_image', 'template': 'forest_map', 'timeout': 20},
+                             {'action': 'wait', 'seconds': 1.5},
+                             {'action': 'log', 'message': 'Bấm CREATE'},
+                             {'action': 'click_image', 'template': 'create_button', 'timeout': 20},
                              {'action': 'wait', 'seconds': 1.5}]}}
 
 

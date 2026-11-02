@@ -63,11 +63,11 @@
     },
     {
       "action": "log",
-      "message": "Bấm CREATE"
+      "message": "Chọn map FOREST"
     },
     {
       "action": "click_image",
-      "template": "create_button",
+      "template": "forest_map",
       "timeout": 20
     },
     {
@@ -76,11 +76,11 @@
     },
     {
       "action": "log",
-      "message": "Chọn map FOREST"
+      "message": "Bấm CREATE"
     },
     {
       "action": "click_image",
-      "template": "forest_map",
+      "template": "create_button",
       "timeout": 20
     },
     {
