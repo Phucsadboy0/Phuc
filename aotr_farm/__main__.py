@@ -46,7 +46,19 @@ def check_environment() -> int:
     return problems
 
 
+def _utf8_console() -> None:
+    """Console Windows thường dùng cp1252/cp437 -> in tiếng Việt sẽ lỗi.
+    Chuyển sang UTF-8; ký tự không hiển thị được thì thay bằng '?' thay vì crash."""
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                pass
+
+
 def main(argv=None) -> int:
+    _utf8_console()
     parser = argparse.ArgumentParser(prog="aotr_farm", description=APP_NAME)
     parser.add_argument("--check", action="store_true", help="kiểm tra môi trường rồi thoát")
     args = parser.parse_args(argv)

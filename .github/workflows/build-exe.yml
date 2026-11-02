@@ -18,6 +18,9 @@ concurrency:
   group: build-exe-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHONUTF8: "1"   # in tiếng Việt trong log không bị lỗi bảng mã
+
 jobs:
   build:
     runs-on: windows-latest
