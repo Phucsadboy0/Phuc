@@ -1,6 +1,6 @@
 {
   "name": "start_mission",
-  "description": "Menu chính -> PLAY -> ô LOBBY -> chờ tải -> trong lobby bấm ô PLAY lớn. Template: 'lobby_play_button' = chữ PLAY trên menu chính KÈM một phần chữ CUSTOMIZATION bên dưới (để không nhầm với ô PLAY trong lobby), anchor_y 0.3 = bấm vào phần chữ PLAY ở trên; 'lobby_card' = ô LOBBY; 'mission_play_button' = ô PLAY lớn trong lobby (khung viền cam, dòng N/A phía trên). 'missions_card' = thẻ MISSIONS (chụp tiêu đề MISSIONS kèm phần trên của hình). 'create_button' = nút CREATE (vàng) để tạo phòng nhiệm vụ. 'forest_map' = CHỈ chữ FOREST (không lấy dòng REWARD BOOST vì đồng hồ thay đổi).",
+  "description": "Menu chính -> PLAY -> ô LOBBY -> chờ tải -> trong lobby bấm ô PLAY lớn. Template: 'lobby_play_button' = chữ PLAY trên menu chính KÈM một phần chữ CUSTOMIZATION bên dưới (để không nhầm với ô PLAY trong lobby), anchor_y 0.3 = bấm vào phần chữ PLAY ở trên; 'lobby_card' = ô LOBBY; 'mission_play_button' = ô PLAY lớn trong lobby (khung viền cam, dòng N/A phía trên). 'missions_card' = thẻ MISSIONS (chụp tiêu đề MISSIONS kèm phần trên của hình). 'create_button' = nút CREATE (vàng) để tạo phòng nhiệm vụ. 'forest_map' = CHỈ chữ FOREST (không lấy dòng REWARD BOOST vì đồng hồ thay đổi). 'start_button' = nút START (vàng) sau khi CREATE.",
   "steps": [
     {
       "action": "log",
@@ -86,6 +86,33 @@
     {
       "action": "wait",
       "seconds": 1.5
+    },
+    {
+      "action": "log",
+      "message": "Bấm START"
+    },
+    {
+      "action": "click_image",
+      "template": "start_button",
+      "timeout": 20
+    },
+    {
+      "action": "wait",
+      "seconds": 1.0
+    },
+    {
+      "action": "wait_image_gone",
+      "template": "start_button",
+      "timeout": 30,
+      "optional": true
+    },
+    {
+      "action": "log",
+      "message": "Đang tải vào nhiệm vụ..."
+    },
+    {
+      "action": "wait",
+      "seconds": 5.0
     }
   ]
 }

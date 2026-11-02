@@ -160,13 +160,14 @@ Sau khi sửa code trong `aotr_farm/`, tạo lại file bằng `python tools/bui
    * Chọn chế độ: `missions_card` = **thẻ MISSIONS** (tiêu đề kèm phần trên của hình).
    * Chọn map: `forest_map` = **chỉ chữ FOREST** (không lấy dòng REWARD BOOST có đồng hồ).
    * Tạo phòng: `create_button` = nút **CREATE** (vàng).
+   * Bắt đầu: `start_button` = nút **START** (vàng).
    * Trong trận: `mission_hud` (một phần HUD luôn hiện, ví dụ biểu tượng gas).
    * Màn hình thưởng: `reward_screen` (tiêu đề), `retry_button` hoặc `continue_button`.
    * (Nếu gặp) hộp thoại mất kết nối: `disconnected_dialog`, `reconnect_button`.
    * Vật phẩm: đặt tên `items/<tên vật phẩm>` để tool đếm số vật phẩm rơi.
 
-   Luồng tự động: **chọn Slot A → Join Community (nếu popup hiện) → PLAY → LOBBY → PLAY trong lobby → MISSIONS → FOREST → CREATE → vào nhiệm vụ**.
-   Bước chọn slot do macro `select_slot.json` làm; Các bước từ PLAY tới CREATE do `start_mission.json` làm.
+   Luồng tự động: **chọn Slot A → Join Community (nếu popup hiện) → PLAY → LOBBY → PLAY trong lobby → MISSIONS → FOREST → CREATE → START → vào nhiệm vụ**.
+   Bước chọn slot do macro `select_slot.json` làm; Các bước từ PLAY tới START do `start_mission.json` làm.
 4. **Chọn vùng OCR** (nếu dùng): ở màn hình thưởng, chọn `exp` → *"Khoanh vùng OCR"* quanh con số;
    làm tương tự cho `gold`. Bấm *"Thử đọc OCR"* để kiểm tra.
 5. **"Thử nhận diện trạng thái"**: điểm khớp nên ≥ ngưỡng (mặc định 0.82) ở đúng màn hình.
