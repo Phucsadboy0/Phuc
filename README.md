@@ -115,6 +115,16 @@ python -m aotr_farm --check
 
 Nếu không cài OCR, bạn vẫn có thể nhập *"EXP/Vàng mặc định mỗi lượt"* để thống kê ước lượng.
 
+### Cách nhanh: bản MỘT FILE `AOTRFarm.py`
+Không muốn tải cả thư mục? Chỉ cần file `AOTRFarm.py` (toàn bộ chương trình gộp lại):
+```bat
+pip install numpy opencv-python mss Pillow psutil
+python AOTRFarm.py
+```
+Lần chạy đầu, chương trình tự tạo `config/`, macro mẫu, `templates/`, `logs/`, `data/` cạnh file.
+Đây là chương trình Python chạy **ngoài** Roblox, **không** phải script Lua cho executor.
+Sau khi sửa code trong `aotr_farm/`, tạo lại file bằng `python tools/build_onefile.py`.
+
 ### Bước 5: Chạy
 * Nháy đúp **`run.bat`** (không hiện cửa sổ console), hoặc
 * **`run_debug.bat`** (hiện console để xem lỗi), hoặc `python -m aotr_farm`.
