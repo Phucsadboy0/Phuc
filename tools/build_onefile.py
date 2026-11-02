@@ -75,7 +75,7 @@ def main() -> None:
         body = strip_module(src)
         if rel == "config.py":
             # Bản một file: thư mục làm việc là thư mục chứa AOTRFarm.py
-            body = body.replace("Path(__file__).resolve().parent.parent", "Path(__file__).resolve().parent")
+            body = body.replace("    ROOT_DIR = Path(__file__).resolve().parent.parent", "    ROOT_DIR = Path(__file__).resolve().parent")
         if rel == "__main__.py":
             body = body.replace("    ensure_dirs()\n", "    ensure_dirs()\n    write_default_macros()\n", 1)
         parts += [f"# {'=' * 70}", f"# {rel}", f"# {'=' * 70}", body, "", ""]

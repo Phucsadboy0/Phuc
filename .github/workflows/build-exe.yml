@@ -1,0 +1,85 @@
+# Build AOTRFarm.exe trên máy Windows của GitHub.
+# Tải file: tab "Actions" -> chọn lần chạy mới nhất -> mục "Artifacts" -> AOTRFarm-windows.
+# Đẩy tag dạng v1.0.0 sẽ tạo thêm một Release có file ZIP đính kèm.
+name: Build Windows EXE
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # cần để tạo Release khi đẩy tag
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Cài thư viện
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt pyinstaller
+
+      - name: Chạy test (trên Windows)
+        run: python -m pytest -q
+
+      - name: Tạo file gộp AOTRFarm.py
+        run: python tools/build_onefile.py
+
+      - name: Kiểm tra môi trường
+        run: python AOTRFarm.py --check
+
+      - name: Build EXE
+        run: >
+          pyinstaller --noconfirm --onefile --windowed --name AOTRFarm
+          --hidden-import plyer.platforms.win.notification
+          --exclude-module pytest
+          AOTRFarm.py
+
+      - name: Thử mở EXE (phải chạy được 8 giây không crash)
+        shell: pwsh
+        run: |
+          $dir = New-Item -ItemType Directory -Force -Path smoke
+          Copy-Item dist\AOTRFarm.exe $dir
+          $p = Start-Process -FilePath "$dir\AOTRFarm.exe" -WorkingDirectory $dir -PassThru
+          Start-Sleep -Seconds 8
+          if ($p.HasExited) {
+            Get-Content "$dir\logs\farm.log" -ErrorAction SilentlyContinue
+            throw "AOTRFarm.exe đã thoát sớm (mã $($p.ExitCode))"
+          }
+          Stop-Process -Id $p.Id -Force
+          if (-not (Test-Path "$dir\config\macros\mission_loop.json")) { throw "Không tạo được macro mẫu" }
+          Get-Content "$dir\logs\farm.log"
+          Write-Host "EXE chạy OK"
+
+      - name: Đóng gói
+        shell: pwsh
+        run: |
+          $pkg = New-Item -ItemType Directory -Force -Path package\AOTRFarm
+          Copy-Item dist\AOTRFarm.exe $pkg
+          Copy-Item README.md $pkg
+          Copy-Item -Recurse config\macros "$pkg\config\macros" -Force
+          New-Item -ItemType Directory -Force -Path "$pkg\templates\items" | Out-Null
+          Copy-Item templates\README.md "$pkg\templates"
+          Compress-Archive -Path package\AOTRFarm -DestinationPath AOTRFarm-windows.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AOTRFarm-windows
+          path: package/
+          retention-days: 30
+
+      - name: Tạo Release (khi đẩy tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: AOTRFarm-windows.zip

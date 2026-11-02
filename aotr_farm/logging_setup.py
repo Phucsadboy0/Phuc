@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import queue
+import sys
 from logging.handlers import QueueHandler, RotatingFileHandler
 from pathlib import Path
 
@@ -52,9 +53,11 @@ def setup_logging(level: str = "INFO", log_dir: Path = LOG_DIR) -> None:
     gui_handler = DroppingQueueHandler(log_queue)
     root.addHandler(gui_handler)
 
-    console = logging.StreamHandler()
-    console.setFormatter(logging.Formatter(LOG_FORMAT, DATE_FORMAT))
-    root.addHandler(console)
+    # Bản .exe không có cửa sổ console (sys.stderr = None) -> bỏ qua
+    if sys.stderr is not None:
+        console = logging.StreamHandler()
+        console.setFormatter(logging.Formatter(LOG_FORMAT, DATE_FORMAT))
+        root.addHandler(console)
 
 
 def set_level(level: str) -> None:

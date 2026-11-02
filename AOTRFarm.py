@@ -39,14 +39,20 @@ trị mặc định bên dưới.
 
 import json
 import logging
+import sys
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any, Dict, List
 
 log = logging.getLogger(__name__)
 
-# Thư mục gốc của dự án (chứa config/, templates/, data/, logs/)
-ROOT_DIR = Path(__file__).resolve().parent
+# Thư mục gốc của dự án (chứa config/, templates/, data/, logs/).
+# Khi chạy bản .exe (PyInstaller), dùng thư mục chứa file .exe thay vì thư mục
+# giải nén tạm -> cấu hình, template, log được giữ lại giữa các lần chạy.
+if getattr(sys, "frozen", False):
+    ROOT_DIR = Path(sys.executable).resolve().parent
+else:
+    ROOT_DIR = Path(__file__).resolve().parent
 CONFIG_DIR = ROOT_DIR / "config"
 MACRO_DIR = CONFIG_DIR / "macros"
 TEMPLATE_DIR = ROOT_DIR / "templates"
@@ -271,6 +277,7 @@ def write_default_macros() -> None:
 
 import logging
 import queue
+import sys
 from logging.handlers import QueueHandler, RotatingFileHandler
 from pathlib import Path
 
@@ -314,9 +321,11 @@ def setup_logging(level: str = "INFO", log_dir: Path = LOG_DIR) -> None:
     gui_handler = DroppingQueueHandler(log_queue)
     root.addHandler(gui_handler)
 
-    console = logging.StreamHandler()
-    console.setFormatter(logging.Formatter(LOG_FORMAT, DATE_FORMAT))
-    root.addHandler(console)
+    # Bản .exe không có cửa sổ console (sys.stderr = None) -> bỏ qua
+    if sys.stderr is not None:
+        console = logging.StreamHandler()
+        console.setFormatter(logging.Formatter(LOG_FORMAT, DATE_FORMAT))
+        root.addHandler(console)
 
 
 def set_level(level: str) -> None:

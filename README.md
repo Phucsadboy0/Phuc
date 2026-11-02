@@ -87,6 +87,20 @@ mỗi máy khác nhau).
 
 ## 2. Cài đặt (Windows 10/11)
 
+### Cách dễ nhất: bản `.exe` (không cần cài Python)
+1. Vào repo trên GitHub → tab **Actions** → chọn lần chạy **Build Windows EXE** mới nhất (dấu ✓ xanh).
+2. Kéo xuống mục **Artifacts** → tải **AOTRFarm-windows** → giải nén.
+3. Nháy đúp **`AOTRFarm.exe`**. Nếu Windows SmartScreen cảnh báo (vì file chưa được ký số):
+   bấm *More info → Run anyway*.
+
+Cấu hình, template, log và thống kê được lưu cạnh file `.exe`. Đặt nó trong một thư mục riêng,
+ví dụ `C:\AOTRFarm`. Sau đó làm tiếp từ **mục 3**.
+
+> Tự build: `pip install pyinstaller` → `python tools/build_onefile.py` →
+> `pyinstaller --onefile --windowed --name AOTRFarm AOTRFarm.py` → file nằm ở `dist\AOTRFarm.exe`.
+
+### Cách cài từ mã nguồn
+
 ### Bước 1: Cài Python
 1. Tải **Python 3.10 trở lên** tại <https://www.python.org/downloads/windows/>.
 2. Khi cài, **tích ô "Add python.exe to PATH"**, rồi bấm *Install Now*.

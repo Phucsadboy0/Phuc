@@ -9,14 +9,20 @@ from __future__ import annotations
 
 import json
 import logging
+import sys
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any, Dict, List
 
 log = logging.getLogger(__name__)
 
-# Thư mục gốc của dự án (chứa config/, templates/, data/, logs/)
-ROOT_DIR = Path(__file__).resolve().parent.parent
+# Thư mục gốc của dự án (chứa config/, templates/, data/, logs/).
+# Khi chạy bản .exe (PyInstaller), dùng thư mục chứa file .exe thay vì thư mục
+# giải nén tạm -> cấu hình, template, log được giữ lại giữa các lần chạy.
+if getattr(sys, "frozen", False):
+    ROOT_DIR = Path(sys.executable).resolve().parent
+else:
+    ROOT_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT_DIR / "config"
 MACRO_DIR = CONFIG_DIR / "macros"
 TEMPLATE_DIR = ROOT_DIR / "templates"
