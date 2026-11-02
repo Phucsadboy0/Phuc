@@ -11,6 +11,7 @@
 | `mission_play_button.png`  | Trong lobby: ô **PLAY** lớn (khung viền cam, dòng N/A phía trên) |
 | `missions_card.png`        | Thẻ **MISSIONS** (chụp tiêu đề MISSIONS kèm phần trên của hình) |
 | `create_button.png`        | Nút **CREATE** (vàng) để tạo phòng nhiệm vụ |
+| `forest_map.png`           | Map **FOREST**: chỉ chụp chữ FOREST, **không** lấy dòng "REWARD BOOST (mm:ss)" vì đồng hồ thay đổi |
 | `mission_hud.png`          | Nhận biết đang trong nhiệm vụ (thanh máu/gas...)|
 | `reward_screen.png`        | Nhận biết màn hình thưởng (kết thúc lượt)       |
 | `disconnected_dialog.png`  | Nhận biết hộp thoại mất kết nối                 |

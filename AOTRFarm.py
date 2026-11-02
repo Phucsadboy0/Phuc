@@ -283,7 +283,8 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                                   "'mission_play_button' = ô PLAY lớn trong lobby (khung viền cam, dòng N/A "
                                   "phía trên). 'missions_card' = thẻ MISSIONS (chụp tiêu đề MISSIONS kèm "
                                   "phần trên của hình). 'create_button' = nút CREATE (vàng) để tạo phòng "
-                                  'nhiệm vụ.',
+                                  "nhiệm vụ. 'forest_map' = CHỈ chữ FOREST (không lấy dòng REWARD BOOST vì "
+                                  'đồng hồ thay đổi).',
                    'steps': [{'action': 'log', 'message': 'Menu chính: bấm PLAY'},
                              {'action': 'click_image',
                               'template': 'lobby_play_button',
@@ -305,6 +306,9 @@ DEFAULT_MACROS = {'after_reward': {'name': 'after_reward',
                              {'action': 'wait', 'seconds': 1.5},
                              {'action': 'log', 'message': 'Bấm CREATE'},
                              {'action': 'click_image', 'template': 'create_button', 'timeout': 20},
+                             {'action': 'wait', 'seconds': 1.5},
+                             {'action': 'log', 'message': 'Chọn map FOREST'},
+                             {'action': 'click_image', 'template': 'forest_map', 'timeout': 20},
                              {'action': 'wait', 'seconds': 1.5}]}}
 
 
@@ -2943,7 +2947,7 @@ class FarmApp:
         tpl.pack(fill="x")
         ttk.Label(tpl, text="Tên template:").grid(row=0, column=0, sticky="w")
         names = sorted(set(self.s.cfg.detection.state_templates.values()) |
-                       {"slot_a_card", "join_community_button", "lobby_card", "mission_play_button", "missions_card", "create_button",
+                       {"slot_a_card", "join_community_button", "lobby_card", "mission_play_button", "missions_card", "create_button", "forest_map",
                         "retry_button", "continue_button", "reconnect_button", "close_button"})
         self.tpl_name = tk.StringVar(value=names[0])
         ttk.Combobox(tpl, textvariable=self.tpl_name, values=names, width=28).grid(row=0, column=1, padx=6)
