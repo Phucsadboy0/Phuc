@@ -1,0 +1,10 @@
+{
+  "name": "after_reward",
+  "description": "Ở màn hình thưởng: bấm Retry nếu có, nếu không thì bấm Continue / về sảnh.",
+  "steps": [
+    {"action": "if_image", "template": "retry_button",
+     "then": [{"action": "click_image", "template": "retry_button", "timeout": 5}],
+     "else": [{"action": "click_image", "template": "continue_button", "timeout": 10, "optional": true}]},
+    {"action": "wait", "seconds": 2.0}
+  ]
+}

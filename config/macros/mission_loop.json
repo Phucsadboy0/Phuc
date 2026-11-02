@@ -1,0 +1,13 @@
+{
+  "name": "mission_loop",
+  "description": "Một chu kỳ hành động trong nhiệm vụ. Engine lặp lại macro này cho tới khi thấy màn hình thưởng. CHỈNH LẠI phím theo cài đặt điều khiển của bạn.",
+  "steps": [
+    {"action": "key_down", "key": "w"},
+    {"action": "press", "key": "space", "times": 2, "interval": 0.25},
+    {"action": "wait", "seconds": 1.2},
+    {"action": "key_up", "key": "w"},
+    {"action": "mouse_move_rel", "dx": 250, "dy": 0, "steps": 12, "duration": 0.3},
+    {"action": "click", "button": "left", "times": 3, "interval": 0.35},
+    {"action": "wait", "seconds": 0.5}
+  ]
+}
