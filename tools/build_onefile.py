@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import pprint
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -56,6 +57,8 @@ def strip_module(src: str) -> str:
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parts = [
         '"""AOTR Farm Assistant - bản MỘT FILE (tự sinh bởi tools/build_onefile.py).',
         "",
